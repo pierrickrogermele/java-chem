@@ -1,0 +1,48 @@
+<project name="fr.cea.chem.test" default="all">
+
+	<dirname property="fr.cea.chem.test.dir" file="${ant.file.fr.cea.chem.test}"/>
+
+	<property name="build.dir" value="build"/>
+	<property name="src.dir" value="src"/>
+
+	<include file="../build.xml" as="lib"/>
+	<include file="../../ant-lib/junit.xml" as="junit"/>
+
+	<!-- DEPS -->
+	<include file="../build.xml" as="lib"/>
+	<path id="fr.cea.chem.test.jars.dep.debug">
+		<path refid="fr.cea.chem.jars.debug"/>
+		<path refid="junit.jar"/>
+	</path>
+
+	<!-- COMPILE -->
+	<target name="compile">
+		<mkdir dir="${build.dir}/debug"/>
+    	<javac srcdir="${src.dir}" destdir="${build.dir}/debug" includeantruntime="false" debug="true" debuglevel="lines,vars,source" classpathref="fr.cea.chem.test.jars.dep.debug"/>
+	</target>
+
+	<!-- RUN -->
+	<target name="run" depends="compile">
+		<junit failureProperty="test.failure" dir="${fr.cea.chem.test.dir}" fork="true">
+			<classpath>
+				<path refid="fr.cea.chem.test.jars.dep.debug"/>
+				<pathelement location="${build.dir}/debug"/>
+			</classpath>
+			<formatter type="brief" usefile="false"/>
+			<batchtest>
+				<fileset dir="${build.dir}/debug" includes="*.class"/>
+			</batchtest>
+		</junit>
+		<fail message="test failed" if="test.failure"/>
+	</target>
+
+	<!-- ALL -->
+	<target name="all" depends="run"/>
+
+	<!-- CLEAN -->
+	<target name="clean">
+		<delete dir="${build.dir}"/>
+	</target>
+
+</project>
+
