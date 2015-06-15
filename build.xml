@@ -15,10 +15,10 @@
 	<!-- DEPENDENCIES -->
 	<include file="../java-cdk/build.xml" as="cdk"/>
 	<path id="fr.cea.chem.jars.dep.debug">
-		<path refid="java.cdk.1.4.19.jar"/>
+		<path refid="java.cdk.jar"/>
 	</path>
 	<path id="fr.cea.chem.jars.dep.release">
-		<path refid="java.cdk.1.4.19.jar"/>
+		<path refid="java.cdk.jar"/>
 	</path>
 
 	<!-- JAR NAMES -->
