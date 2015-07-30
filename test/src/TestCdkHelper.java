@@ -16,6 +16,18 @@ public class TestCdkHelper {
 		CdkHelper hlp = new CdkHelper(new ChemObsConsole());
 		assertNotNull(hlp.makeAtomContainer("C[C+](C)O"));
 		assertNotNull(hlp.makeAtomContainer("C[C-](C)O"));
+		assertNotNull(hlp.makeAtomContainer("InChI=1S/CH4/h1H4"));
+	}
+
+	////////////////////
+	// TEST GET INCHI //
+	////////////////////
+
+	@Test
+	public void test_getInchi() {
+		CdkHelper hlp = new CdkHelper(new ChemObsConsole());
+		String inchi = "InChI=1S/CH4/h1H4";
+		assertTrue(hlp.getInchi(hlp.makeAtomContainer(inchi)).equals(inchi));
 	}
 
 	////////////////////
@@ -30,5 +42,19 @@ public class TestCdkHelper {
 
 		assertTrue(fr.cea.chem.CdkHelper.toString(acetonep).endsWith("+"));
 		assertTrue(fr.cea.chem.CdkHelper.toString(acetonem).endsWith("-"));
+	}
+
+	///////////////////
+	// TEST LOAD SDF //
+	///////////////////
+
+	@Test
+	public void test_loadSdf() {
+		String root = fr.cea.lib.Meta.getPackageRoot(this.getClass());
+		java.io.File file = new java.io.File(new java.io.File(root), "metfrag-chemspider-output.sdf");
+		CdkHelper hlp = new CdkHelper(new ChemObsConsole());
+		IAtomContainer[] mols = hlp.loadSdf(file);
+		assertNotNull(mols);
+		assertTrue(mols.length > 0);
 	}
 }

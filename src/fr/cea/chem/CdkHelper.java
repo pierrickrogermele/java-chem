@@ -10,6 +10,11 @@ import net.sf.jniinchi.INCHI_RET;
 import org.openscience.cdk.smiles.SmilesParser;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.exception.InvalidSmilesException;
+import org.openscience.cdk.interfaces.IChemFile;
+import org.openscience.cdk.io.ReaderFactory;
+import org.openscience.cdk.io.ISimpleChemObjectReader;
+import org.openscience.cdk.tools.manipulator.ChemFileManipulator;
+import org.openscience.cdk.DefaultChemObjectBuilder;
 
 public final class CdkHelper {
 
@@ -84,5 +89,69 @@ public final class CdkHelper {
 		}
 
 		return ac;
+	}
+
+	///////////////
+	// GET INCHI //
+	///////////////
+
+	public String getInchi(IAtomContainer ac) {
+
+		String inchi = null;
+
+		try {
+			/* TODO Calling getInChIGenerator() triggers the loading of the native compiled InChI shared library and the display of an output like this one:
+   0    [main] INFO  net.sf.jnati.deploy.artefact.ConfigManager  - Loading global configuration
+   7    [main] DEBUG net.sf.jnati.deploy.artefact.ConfigManager  - Loading defaults: jar:file:/Users/pierrick/dev/distrib-metabohub/java-cdk/cdk-1.5.10.jar!/META-INF/jnati/jnati.default-properties
+   7    [main] INFO  net.sf.jnati.deploy.artefact.ConfigManager  - Loading artefact configuration: jniinchi-1.03_1
+   8    [main] DEBUG net.sf.jnati.deploy.artefact.ConfigManager  - Loading instance defaults: jar:file:/Users/pierrick/dev/distrib-metabohub/java-cdk/cdk-1.5.10.jar!/META-INF/jnati/jnati.instance.default-properties
+   11   [main] INFO  net.sf.jnati.deploy.repository.ClasspathRepository  - Searching classpath for: jniinchi-1.03_1-MAC-X86_64
+   13   [main] INFO  net.sf.jnati.deploy.repository.LocalRepository  - Searching local repository for: jniinchi-1.03_1-MAC-X86_64
+   13   [main] DEBUG net.sf.jnati.deploy.repository.LocalRepository  - Artefact path: /Users/pierrick/.jnati/repo/jniinchi/1.03_1/MAC-X86_64
+   14   [main] INFO  net.sf.jnati.deploy.artefact.ManifestReader  - Reading manifest
+   124  [main] INFO  net.sf.jnati.deploy.NativeArtefactLocator  - Artefact (jniinchi-1.03_1-MAC-X86_64) location: /Users/pierrick/.jnati/repo/jniinchi/1.03_1/MAC-X86_64
+   124  [main] DEBUG net.sf.jnati.deploy.NativeLibraryLoader  - Loading library: /Users/pierrick/.jnati/repo/jniinchi/1.03_1/MAC-X86_64/JniInchi-1.03_1-MAC-X86_64
+			TODO How to disable this output ?
+			*/
+
+			inchi = InChIGeneratorFactory.getInstance().getInChIGenerator(ac).getInchi();
+		} catch (CDKException e) {
+				if (this.obs != null)
+					this.obs.chemError("ERROR: Failure while trying to generate InChI: " + e.getMessage() + ".");
+		}
+
+		return inchi;
+	}
+
+	//////////////
+	// LOAD SDF //
+	//////////////
+
+	public IAtomContainer[] loadSdf(String file) {
+		return this.loadSdf(new java.io.File(file));
+	}
+
+	public IAtomContainer[] loadSdf(java.io.File file) {
+
+		java.util.List<IAtomContainer> aclist = null;
+
+		ReaderFactory readerFactory = new ReaderFactory();
+		try {
+			ISimpleChemObjectReader reader = readerFactory.createReader(new java.io.FileReader(file));
+			if (reader != null) {
+				IChemFile content = (IChemFile) reader.read(DefaultChemObjectBuilder.getInstance().newInstance(IChemFile.class));
+				if (content != null) {
+					aclist = ChemFileManipulator.getAllAtomContainers(content);
+				}
+			}
+		} catch (java.io.IOException e) {
+			if (this.obs != null)
+				this.obs.chemError("ERROR: Failure while trying to load SDF file \"" + file.getAbsolutePath() + "\": " + e.getMessage() + ".");
+		} catch (CDKException e) {
+			if (this.obs != null)
+				this.obs.chemError("ERROR: Failure while trying to load SDF file \"" + file.getAbsolutePath() + "\": " + e.getMessage() + ".");
+		}
+
+		return aclist != null ? aclist.toArray(new IAtomContainer[0]) : null;
 	}
 }
