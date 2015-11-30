@@ -27,6 +27,34 @@
 		</dependency>
 		<dependency>
 			<groupId>org.openscience.cdk</groupId>
+			<artifactId>cdk-silent</artifactId>
+			<version>1.5.12</version>
+		</dependency>
+
+		<!-- For StructureDiagramGenerator -->
+		<dependency>
+			<groupId>org.openscience.cdk</groupId>
+			<artifactId>cdk-sdg</artifactId>
+			<version>1.5.12</version>
+		</dependency>
+
+		<!-- BasicSceneGenerator -->
+		<dependency>
+			<groupId>org.openscience.cdk</groupId>
+			<artifactId>cdk-renderbasic</artifactId>
+			<version>1.5.12</version>
+		</dependency>
+
+		<!-- AWTDrawVisitor -->
+		<dependency>
+			<groupId>org.openscience.cdk</groupId>
+			<artifactId>cdk-renderawt</artifactId>
+			<version>1.5.12</version>
+		</dependency>
+
+		<!-- InChI -->
+		<dependency>
+			<groupId>org.openscience.cdk</groupId>
 			<artifactId>cdk-inchi</artifactId>
 			<version>1.5.12</version>
 		</dependency>
