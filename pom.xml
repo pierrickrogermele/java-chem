@@ -8,7 +8,13 @@
 	<artifactId>javachem</artifactId>
 	<version>1.0</version>
 
+	<!--~~~~~~~~~~~~
+	~ DEPENDENCIES ~
+	~~~~~~~~~~~~~-->
+
 	<dependencies>
+
+		<!-- CDK -->
 		<dependency>
 			<groupId>org.openscience.cdk</groupId>
 			<artifactId>cdk-core</artifactId>
@@ -24,12 +30,20 @@
 			<artifactId>cdk-inchi</artifactId>
 			<version>1.5.12</version>
 		</dependency>
-
 		<dependency>
 			<groupId>net.sf.jni-inchi</groupId>
 			<artifactId>jni-inchi</artifactId>
 			<version>0.8</version>
 		</dependency>
+		
+		<!-- TEST -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
+		</dependency>
+
 	</dependencies>
 
 </project>
