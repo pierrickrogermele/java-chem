@@ -1,4 +1,4 @@
-package fr.cea.chem;
+package org.openscience.chem;
 
 public class ChemObsConsole implements IChemObserver {
 

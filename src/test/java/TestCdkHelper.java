@@ -2,8 +2,8 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.openscience.cdk.interfaces.IAtomContainer;
-import fr.cea.chem.CdkHelper;
-import fr.cea.chem.ChemObsConsole;
+import org.openscience.chem.CdkHelper;
+import org.openscience.chem.ChemObsConsole;
 
 public class TestCdkHelper {
 
@@ -40,8 +40,8 @@ public class TestCdkHelper {
 		IAtomContainer acetonep = hlp.makeAtomContainer("C[C+](C)O");
 		IAtomContainer acetonem = hlp.makeAtomContainer("C[C-](C)O");
 
-		assertTrue(fr.cea.chem.CdkHelper.toString(acetonep).endsWith("+"));
-		assertTrue(fr.cea.chem.CdkHelper.toString(acetonem).endsWith("-"));
+		assertTrue(org.openscience.chem.CdkHelper.toString(acetonep).endsWith("+"));
+		assertTrue(org.openscience.chem.CdkHelper.toString(acetonem).endsWith("-"));
 	}
 
 	///////////////////
@@ -50,8 +50,8 @@ public class TestCdkHelper {
 
 	@Test
 	public void test_loadSdf() {
-		String root = fr.cea.lib.Meta.getPackageRoot(this.getClass());
-		java.io.File file = new java.io.File(new java.io.File(root), "metfrag-chemspider-output.sdf");
+		java.net.URL url = Thread.currentThread().getContextClassLoader().getResource("metfrag-chemspider-output.sdf");
+		java.io.File file = new java.io.File(url.getFile());
 		CdkHelper hlp = new CdkHelper(new ChemObsConsole());
 		IAtomContainer[] mols = hlp.loadSdf(file);
 		assertNotNull(mols);

@@ -1,4 +1,4 @@
-package fr.cea.chem;
+package org.openscience.chem;
 
 import org.openscience.cdk.config.IsotopeFactory;
 import org.openscience.cdk.config.Isotopes;
