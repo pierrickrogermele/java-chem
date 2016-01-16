@@ -5,6 +5,12 @@ import org.openscience.cdk.config.Isotopes;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IMolecularFormula;
 import org.openscience.cdk.interfaces.IIsotope;
+import org.openscience.cdk.interfaces.IChemFile;
+import org.openscience.cdk.interfaces.IAtom;
+import org.openscience.cdk.interfaces.IBond;
+import org.openscience.cdk.Atom;
+import org.openscience.cdk.AtomContainer;
+import org.openscience.cdk.Bond;
 import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
 import org.openscience.cdk.inchi.InChIToStructure;
 import org.openscience.cdk.inchi.InChIGeneratorFactory;
@@ -13,7 +19,6 @@ import net.sf.jniinchi.INCHI_RET;
 import org.openscience.cdk.smiles.SmilesParser;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.exception.InvalidSmilesException;
-import org.openscience.cdk.interfaces.IChemFile;
 import org.openscience.cdk.io.ReaderFactory;
 import org.openscience.cdk.io.ISimpleChemObjectReader;
 import org.openscience.cdk.tools.manipulator.ChemFileManipulator;
@@ -37,6 +42,32 @@ public final class CdkHelper {
 	//////////////
 
 	IChemObserver obs;
+
+	////////////
+	// GROUPS //
+	////////////
+
+	public enum Group { CARBOXYL }
+
+	public IAtomContainer makeGroup(Group group) {
+
+		IAtomContainer grp = null;
+
+		switch(group) {
+			case CARBOXYL:
+				grp = new AtomContainer();
+				grp.addAtom(new Atom("C"));
+				grp.addAtom(new Atom("O"));
+				grp.addAtom(new Atom("O"));
+				grp.addAtom(new Atom("H"));
+				grp.addBond(new Bond(grp.getAtom(0), grp.getAtom(1), IBond.Order.DOUBLE));
+				grp.addBond(new Bond(grp.getAtom(0), grp.getAtom(2)));
+				grp.addBond(new Bond(grp.getAtom(2), grp.getAtom(3)));
+				break;
+		}
+
+		return grp;
+	}
 
 	///////////////
 	// TO STRING //

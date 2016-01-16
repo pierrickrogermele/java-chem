@@ -19,6 +19,16 @@ public class TestCdkHelper {
 		assertNotNull(hlp.makeAtomContainer("InChI=1S/CH4/h1H4"));
 	}
 
+	/////////////////////
+	// TEST MAKE GROUP //
+	/////////////////////
+
+	@Test
+	public void test_makeGroup() {
+		CdkHelper hlp = new CdkHelper(new ChemObsConsole());
+		assertNotNull(hlp.makeGroup(CdkHelper.Group.CARBOXYL));
+	}
+
 	////////////////////
 	// TEST GET INCHI //
 	////////////////////
