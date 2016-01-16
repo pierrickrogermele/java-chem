@@ -7,6 +7,7 @@ import org.openscience.cdk.interfaces.IMolecularFormula;
 import org.openscience.cdk.interfaces.IIsotope;
 import org.openscience.cdk.interfaces.IChemFile;
 import org.openscience.cdk.interfaces.IAtom;
+import org.openscience.cdk.interfaces.IAtomType;
 import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.Atom;
 import org.openscience.cdk.AtomContainer;
@@ -23,6 +24,11 @@ import org.openscience.cdk.io.ReaderFactory;
 import org.openscience.cdk.io.ISimpleChemObjectReader;
 import org.openscience.cdk.tools.manipulator.ChemFileManipulator;
 import org.openscience.cdk.DefaultChemObjectBuilder;
+import org.openscience.cdk.atomtype.CDKAtomTypeMatcher;
+import org.openscience.cdk.tools.manipulator.AtomTypeManipulator;
+import org.openscience.cdk.tools.CDKHydrogenAdder;
+import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
+import org.openscience.cdk.isomorphism.UniversalIsomorphismTester;
 
 public final class CdkHelper {
 
@@ -43,17 +49,35 @@ public final class CdkHelper {
 
 	IChemObserver obs;
 
-	////////////
-	// GROUPS //
-	////////////
+	///////////////////////
+	// FUNCTIONAL GROUPS //
+	///////////////////////
 
-	public enum Group { CARBOXYL }
+	public enum FunctionalGroup {
+		ALCOHOL, CARBOXYL;
+		public static final java.util.Map<String, FunctionalGroup> fromString = new java.util.HashMap<String, FunctionalGroup>();
+		static {
+			for (FunctionalGroup g: FunctionalGroup.values())
+			fromString.put(g.toString(), g);
+		}
+	}
 
-	public IAtomContainer makeGroup(Group group) {
+	public IAtomContainer makeFunctionalGroup(String group) {
+		return this.makeFunctionalGroup(FunctionalGroup.fromString.get(group));
+	}
+
+	public IAtomContainer makeFunctionalGroup(FunctionalGroup group) {
 
 		IAtomContainer grp = null;
 
 		switch(group) {
+			case ALCOHOL:
+				grp = new AtomContainer();
+				grp.addAtom(new Atom("O"));
+				grp.addAtom(new Atom("H"));
+				grp.addBond(new Bond(grp.getAtom(0), grp.getAtom(1)));
+				break;
+
 			case CARBOXYL:
 				grp = new AtomContainer();
 				grp.addAtom(new Atom("C"));
@@ -106,6 +130,39 @@ public final class CdkHelper {
 			s = "(" + s + ")" + new String(strcharge);
 		}
 		return s;
+	}
+
+	////////////////////
+	// SET ATOM TYPES //
+	////////////////////
+
+	public void setAtomTypes(IAtomContainer ac) throws CDKException {
+		CDKAtomTypeMatcher matcher = CDKAtomTypeMatcher.getInstance(ac.getBuilder());
+		for (IAtom atom: ac.atoms()) {
+			IAtomType type = matcher.findMatchingAtomType(ac, atom);
+			AtomTypeManipulator.configure(atom, type);
+		}
+	}
+
+	////////////////////////////
+	// ADD EXPLICIT HYDROGENS //
+	////////////////////////////
+
+	public void addExplicitHydrogens(IAtomContainer ac) throws CDKException {
+		CDKHydrogenAdder adder = CDKHydrogenAdder.getInstance(ac.getBuilder());
+		adder.addImplicitHydrogens(ac);
+		AtomContainerManipulator.convertImplicitToExplicitHydrogens(ac);
+	}
+
+	///////////////////////////
+	// CONTAINS SUBSTRUCTURE //
+	///////////////////////////
+
+	public boolean containsSubstructure(IAtomContainer molecule, IAtomContainer substructure) throws CDKException {
+		this.setAtomTypes(molecule);
+		this.addExplicitHydrogens(molecule);
+		this.setAtomTypes(substructure);
+		return new UniversalIsomorphismTester().isSubgraph(molecule, substructure);
 	}
 
 	/////////////////////////

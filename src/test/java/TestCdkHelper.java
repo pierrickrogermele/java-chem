@@ -19,14 +19,17 @@ public class TestCdkHelper {
 		assertNotNull(hlp.makeAtomContainer("InChI=1S/CH4/h1H4"));
 	}
 
-	/////////////////////
-	// TEST MAKE GROUP //
-	/////////////////////
+	////////////////////////////////
+	// TEST MAKE FUNCTIONAL GROUP //
+	////////////////////////////////
 
 	@Test
-	public void test_makeGroup() {
+	public void test_makeFunctionalGroup() {
 		CdkHelper hlp = new CdkHelper(new ChemObsConsole());
-		assertNotNull(hlp.makeGroup(CdkHelper.Group.CARBOXYL));
+		assertNotNull(hlp.makeFunctionalGroup(CdkHelper.FunctionalGroup.ALCOHOL));
+		assertNotNull(hlp.makeFunctionalGroup(CdkHelper.FunctionalGroup.CARBOXYL));
+		assertNotNull(hlp.makeFunctionalGroup("ALCOHOL"));
+		assertNotNull(hlp.makeFunctionalGroup("CARBOXYL"));
 	}
 
 	////////////////////
