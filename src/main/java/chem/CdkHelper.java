@@ -158,6 +158,22 @@ public final class CdkHelper {
 	// CONTAINS SUBSTRUCTURE //
 	///////////////////////////
 
+	public boolean[] containSubstructure(IAtomContainer[] molecules, IAtomContainer substructure) throws CDKException {
+
+		boolean[] contain = new boolean[molecules.length];
+
+		this.setAtomTypes(substructure);
+		UniversalIsomorphismTester tester = new UniversalIsomorphismTester();
+
+		for (int i = 0 ; i < molecules.length ; ++i) {
+			this.setAtomTypes(molecules[i]);
+			this.addExplicitHydrogens(molecules[i]);
+			contain[i] = tester.isSubgraph(molecules[i], substructure);
+		}
+
+		return contain;
+	}
+
 	public boolean containsSubstructure(IAtomContainer molecule, IAtomContainer substructure) throws CDKException {
 		this.setAtomTypes(molecule);
 		this.addExplicitHydrogens(molecule);
@@ -168,6 +184,16 @@ public final class CdkHelper {
 	/////////////////////////
 	// MAKE ATOM CONTAINER //
 	/////////////////////////
+
+	public IAtomContainer[] makeAtomContainers(String[] strings) {
+
+		IAtomContainer[] ac = new IAtomContainer[strings.length];
+
+		for (int i = 0 ; i < ac.length ; ++i)
+			ac[i] = this.makeAtomContainer(strings[i]);
+
+		return ac;
+	}
 
 	public IAtomContainer makeAtomContainer(String s) {
 

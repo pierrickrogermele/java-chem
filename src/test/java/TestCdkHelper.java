@@ -4,6 +4,7 @@ import org.junit.Test;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.chem.CdkHelper;
 import org.openscience.chem.ChemObsConsole;
+import org.openscience.cdk.exception.CDKException;
 
 public class TestCdkHelper {
 
@@ -17,6 +18,36 @@ public class TestCdkHelper {
 		assertNotNull(hlp.makeAtomContainer("C[C+](C)O"));
 		assertNotNull(hlp.makeAtomContainer("C[C-](C)O"));
 		assertNotNull(hlp.makeAtomContainer("InChI=1S/CH4/h1H4"));
+	}
+
+	@Test
+	public void test_makeAtomContainers() {
+		CdkHelper hlp = new CdkHelper(new ChemObsConsole());
+		String[] strings = {"C[C+](C)O", "C[C-](C)O", "InChI=1S/CH4/h1H4"};
+		IAtomContainer[] ac = hlp.makeAtomContainers(strings);
+		assertNotNull(ac);
+		assertEquals(strings.length, ac.length);
+	}
+
+	////////////////////////////////
+	// TEST CONTAINS SUBSTRUCTURE //
+	////////////////////////////////
+
+	@Test
+	public void test_containsSubstructure() throws CDKException {
+		CdkHelper hlp = new CdkHelper(new ChemObsConsole());
+		assertTrue(hlp.containsSubstructure(hlp.makeAtomContainer("InChI=1S/C2H6O/c1-2-3/h3H,2H2,1H3"), hlp.makeFunctionalGroup("ALCOHOL")));
+		assertFalse(hlp.containsSubstructure(hlp.makeAtomContainer("InChI=1S/C2H6/c1-2/h1-2H3"), hlp.makeFunctionalGroup("ALCOHOL")));
+		assertTrue(hlp.containsSubstructure(hlp.makeAtomContainer("InChI=1/C13H18Cl2N2O2/c14-5-7-17(8-6-15)11-3-1-10(2-4-11)9-12(16)13(18)19/h1-4,12H,5-9,16H2,(H,18,19)/t12-/m0/s1"), hlp.makeFunctionalGroup("CARBOXYL")));
+	}
+
+	@Test
+	public void test_containSubstructure() throws CDKException {
+		CdkHelper hlp = new CdkHelper(new ChemObsConsole());
+		String[] mols = {"InChI=1S/C2H6O/c1-2-3/h3H,2H2,1H3", "InChI=1S/C2H6/c1-2/h1-2H3"};
+		boolean[] contain = hlp.containSubstructure(hlp.makeAtomContainers(mols), hlp.makeFunctionalGroup("ALCOHOL"));
+		assertNotNull(contain);
+		assertEquals(contain.length, mols.length);
 	}
 
 	////////////////////////////////
