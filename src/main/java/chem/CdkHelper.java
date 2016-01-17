@@ -154,6 +154,14 @@ public final class CdkHelper {
 		AtomContainerManipulator.convertImplicitToExplicitHydrogens(ac);
 	}
 
+	//////////////////////////////
+	// CONTAIN FUNCTIONAL GROUP //
+	//////////////////////////////
+
+	public boolean[] containFunctionalGroup(String[] inchi, String group) throws CDKException {
+		return containSubstructure(this.makeAtomContainers(inchi), this.makeFunctionalGroup(group));
+	}
+
 	///////////////////////////
 	// CONTAINS SUBSTRUCTURE //
 	///////////////////////////

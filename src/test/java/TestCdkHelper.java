@@ -29,6 +29,19 @@ public class TestCdkHelper {
 		assertEquals(strings.length, ac.length);
 	}
 
+	///////////////////////////////////
+	// TEST CONTAIN FUNCTIONAL GROUP //
+	///////////////////////////////////
+
+	@Test
+	public void test_containFunctionalGroup() throws CDKException {
+		CdkHelper hlp = new CdkHelper(new ChemObsConsole());
+		String[] mols = {"InChI=1S/C2H6O/c1-2-3/h3H,2H2,1H3", "InChI=1S/C2H6/c1-2/h1-2H3"};
+		boolean[] contain = hlp.containFunctionalGroup(mols, "ALCOHOL");
+		assertNotNull(contain);
+		assertEquals(contain.length, mols.length);
+	}
+
 	////////////////////////////////
 	// TEST CONTAINS SUBSTRUCTURE //
 	////////////////////////////////
