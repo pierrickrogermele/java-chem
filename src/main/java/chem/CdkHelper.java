@@ -189,6 +189,13 @@ public final class CdkHelper {
 		return new UniversalIsomorphismTester().isSubgraph(molecule, substructure);
 	}
 
+	///////////////////////
+	// FIND SUBSTRUCTURE //
+	///////////////////////
+
+	public IAtomContainer findSubstructure(IAtomContainer molecule, String empirical_formula) {
+	}
+
 	/////////////////////////
 	// MAKE ATOM CONTAINER //
 	/////////////////////////
