@@ -50,6 +50,21 @@ public final class CdkHelper {
 	IChemObserver obs;
 
 	///////////////////////
+	// FIND SUBTRUCTURES //
+	///////////////////////
+
+	/**
+	 * @param molecule: The molecule in which to search for substructures.
+	 * @param mass: Mass of the searched substructure.
+	 * @param charge: Charge of the searched substructures.
+	 * @param err: Error between specified mass and exact mass of found substructure, in ppm.
+	 */
+	public void findSubstructures(IAtomContainer molecule, double mz, int charge, double err) throws CDKException {
+		this.setAtomTypes(molecule);
+		this.addExplicitHydrogens(molecule);
+	}
+
+	///////////////////////
 	// FUNCTIONAL GROUPS //
 	///////////////////////
 
@@ -187,13 +202,6 @@ public final class CdkHelper {
 		this.addExplicitHydrogens(molecule);
 		this.setAtomTypes(substructure);
 		return new UniversalIsomorphismTester().isSubgraph(molecule, substructure);
-	}
-
-	///////////////////////
-	// FIND SUBSTRUCTURE //
-	///////////////////////
-
-	public IAtomContainer findSubstructure(IAtomContainer molecule, String empirical_formula) {
 	}
 
 	/////////////////////////
