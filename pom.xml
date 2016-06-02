@@ -18,45 +18,50 @@
 		<dependency>
 			<groupId>org.openscience.cdk</groupId>
 			<artifactId>cdk-core</artifactId>
-			<version>1.5.12</version>
+			<version>1.5.13</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openscience.cdk</groupId>
 			<artifactId>cdk-extra</artifactId>
-			<version>1.5.12</version>
+			<version>1.5.13</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openscience.cdk</groupId>
 			<artifactId>cdk-silent</artifactId>
-			<version>1.5.12</version>
+			<version>1.5.13</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openscience.cdk</groupId>
+			<artifactId>cdk-legacy</artifactId>
+			<version>1.5.13</version>
 		</dependency>
 
 		<!-- For StructureDiagramGenerator -->
 		<dependency>
 			<groupId>org.openscience.cdk</groupId>
 			<artifactId>cdk-sdg</artifactId>
-			<version>1.5.12</version>
+			<version>1.5.13</version>
 		</dependency>
 
 		<!-- BasicSceneGenerator -->
 		<dependency>
 			<groupId>org.openscience.cdk</groupId>
 			<artifactId>cdk-renderbasic</artifactId>
-			<version>1.5.12</version>
+			<version>1.5.13</version>
 		</dependency>
 
 		<!-- AWTDrawVisitor -->
 		<dependency>
 			<groupId>org.openscience.cdk</groupId>
 			<artifactId>cdk-renderawt</artifactId>
-			<version>1.5.12</version>
+			<version>1.5.13</version>
 		</dependency>
 
 		<!-- InChI -->
 		<dependency>
 			<groupId>org.openscience.cdk</groupId>
 			<artifactId>cdk-inchi</artifactId>
-			<version>1.5.12</version>
+			<version>1.5.13</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.jni-inchi</groupId>

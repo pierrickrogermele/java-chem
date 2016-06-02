@@ -33,6 +33,10 @@ import org.openscience.cdk.isomorphism.UniversalIsomorphismTester;
 import org.openscience.cdk.graph.matrix.AdjacencyMatrix;
 import org.openscience.cdk.formula.MolecularFormulaRange;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
+import org.openscience.cdk.formula.MassToFormulaTool;
+import org.openscience.cdk.interfaces.IMolecularFormulaSet;
+import org.openscience.cdk.formula.MolecularFormulaRange;
+import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
 
 public final class CdkHelper {
 
@@ -53,37 +57,29 @@ public final class CdkHelper {
 
 	IChemObserver obs;
 
-	////////////////////
-	// COUNT ISOTOPES //
-	////////////////////
+	/////////////////////////
+	// UPDATE MASS NUMBERS //
+	/////////////////////////
 
-	public java.util.Map<IIsotope, Integer> countIsotopes(IAtomContainer molecule) throws CDKException {
+	public void updateMassNumbers(IAtomContainer c) throws CDKException {
 
-		java.util.Map<IIsotope, Integer> count = new java.util.TreeMap<IIsotope, Integer>(
-				new java.util.Comparator<IIsotope>() {
-					@Override
-					public int compare(IIsotope a, IIsotope b) {
-						if (a.getAtomicNumber() != b.getAtomicNumber())
-							return a.getAtomicNumber().compareTo(b.getAtomicNumber());
-						return a.getMassNumber().compareTo(b.getMassNumber());
-					}
-				}
-				);
-
-		// Loop on all atoms
-		for (IAtom a: molecule.atoms()) {
-			try {
-				IIsotope t = a.getMassNumber() == null ? Isotopes.getInstance().getMajorIsotope(a.getAtomicNumber()) : new Isotope(a.getSymbol(), a.getMassNumber());
-				if (count.containsKey(t))
-					count.put(t, new Integer(count.get(t) + 1));
-				else
-					count.put(t, new Integer(1));
-			} catch(java.io.IOException e) {
-				throw new CDKException("Unable to load isotopes data file.");
-			}
+		try {
+			for (IAtom a: c.atoms())
+				if (a.getMassNumber() == null)
+					a.setMassNumber(Isotopes.getInstance().getMajorIsotope(a.getAtomicNumber()).getMassNumber());
+		} catch (java.io.IOException e) {
+			throw new CDKException("Unable to load isotopes data file.");
 		}
+	}
 
-		return count;
+	/////////////////////
+	// UPDATE ALL INFO //
+	/////////////////////
+
+	public void updateAllInfo(IAtomContainer c) throws CDKException {
+		this.setAtomTypes(c);
+		this.addExplicitHydrogens(c);
+		this.updateMassNumbers(c);
 	}
 
 	///////////////////////
@@ -98,21 +94,21 @@ public final class CdkHelper {
 	 */
 	public void findSubstructures(IAtomContainer molecule, double mz, int charge, double err) throws CDKException {
 
-		// Add atom information into the molecule
-		this.setAtomTypes(molecule);
-		this.addExplicitHydrogens(molecule);
+		// Add missing atom information into the molecule
+		this.updateAllInfo(molecule);
 
-		// A
+		// List atoms present inside the molecule
+		IMolecularFormula mf = MolecularFormulaManipulator.getMolecularFormula(molecule);
+		for (IIsotope i: mf.isotopes())
+			System.out.println("Atom " + i.getSymbol() + i.getMassNumber() + " count is : " + mf.getIsotopeCount(i) + ".");
+
+
 		// Find sets of atoms that are in mz.
-		java.util.Map<IIsotope, Integer> atom_types = this.countIsotopes(molecule);
-		java.util.Iterator i = atom_types.entrySet().iterator();
-		while (i.hasNext()) {
-			java.util.Map.Entry<IIsotope, Integer> mapEntry = (java.util.Map.Entry<IIsotope, Integer>)i.next();
-			System.out.println("Atom " + mapEntry.getKey().getSymbol() + mapEntry.getKey().getMassNumber() + " count is : " + mapEntry.getValue() + ".");
-		}
-//		java.util.List<String> atoms = AtomContainerManipulator.getAllIDs(molecule);
-//		for (String a: atoms)
-//			System.err.println("ATOM : " + a);
+		MassToFormulaTool mtft = new MassToFormulaTool(DefaultChemObjectBuilder.getInstance());
+		IMolecularFormulaSet formula_set = mtft.generate(mz);
+		for (IMolecularFormula imf: formula_set.molecularFormulas())
+			System.err.println(MolecularFormulaManipulator.getString(imf));
+
 		//MolecularFormulaRange
 		// For each set, generate all possible atom combinations in the molecule.
 		// For each atom combination, check the connectivity using org/openscience/cdk/graph/ConnectivityChecker.
