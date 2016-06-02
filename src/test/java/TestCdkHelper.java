@@ -123,6 +123,6 @@ public class TestCdkHelper {
 	@Test
 	public void test_findSubstructures() throws CDKException {
 		IAtomContainer m = MoleculeFactory.makeBiphenyl();
-		new CdkHelper().findSubstructures(m, 24, +1, 5);
+		new CdkHelper().findSubstructures(m, 24, +1, 100005);
 	}
 }

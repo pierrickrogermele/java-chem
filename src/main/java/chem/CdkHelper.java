@@ -37,6 +37,8 @@ import org.openscience.cdk.formula.MassToFormulaTool;
 import org.openscience.cdk.interfaces.IMolecularFormulaSet;
 import org.openscience.cdk.formula.MolecularFormulaRange;
 import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
+import org.openscience.cdk.formula.rules.IRule;
+import org.openscience.cdk.formula.rules.ToleranceRangeRule;
 
 public final class CdkHelper {
 
@@ -105,6 +107,22 @@ public final class CdkHelper {
 
 		// Find sets of atoms that are in mz.
 		MassToFormulaTool mtft = new MassToFormulaTool(DefaultChemObjectBuilder.getInstance());
+		{
+			// Add rules
+			java.util.List<IRule> rules = new java.util.ArrayList<IRule>();
+			{
+				// Add mass tolerance rule
+				ToleranceRangeRule tolerance_rule = new ToleranceRangeRule();
+				Double[] tolerance_rule_param = { mz, mz * err * 1e-6 };
+				tolerance_rule.setParameters(tolerance_rule_param);
+				rules.add(tolerance_rule);
+
+				// Add set of isotopes
+			}
+
+			mtft.setRestrictions(rules);
+		}
+
 		IMolecularFormulaSet formula_set = mtft.generate(mz);
 		for (IMolecularFormula imf: formula_set.molecularFormulas())
 			System.err.println(MolecularFormulaManipulator.getString(imf));
