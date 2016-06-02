@@ -12,6 +12,7 @@ import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.Atom;
 import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.Bond;
+import org.openscience.cdk.Isotope;
 import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
 import org.openscience.cdk.inchi.InChIToStructure;
 import org.openscience.cdk.inchi.InChIGeneratorFactory;
@@ -29,6 +30,9 @@ import org.openscience.cdk.tools.manipulator.AtomTypeManipulator;
 import org.openscience.cdk.tools.CDKHydrogenAdder;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 import org.openscience.cdk.isomorphism.UniversalIsomorphismTester;
+import org.openscience.cdk.graph.matrix.AdjacencyMatrix;
+import org.openscience.cdk.formula.MolecularFormulaRange;
+import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 
 public final class CdkHelper {
 
@@ -49,6 +53,39 @@ public final class CdkHelper {
 
 	IChemObserver obs;
 
+	////////////////////
+	// COUNT ISOTOPES //
+	////////////////////
+
+	public java.util.Map<IIsotope, Integer> countIsotopes(IAtomContainer molecule) throws CDKException {
+
+		java.util.Map<IIsotope, Integer> count = new java.util.TreeMap<IIsotope, Integer>(
+				new java.util.Comparator<IIsotope>() {
+					@Override
+					public int compare(IIsotope a, IIsotope b) {
+						if (a.getAtomicNumber() != b.getAtomicNumber())
+							return a.getAtomicNumber().compareTo(b.getAtomicNumber());
+						return a.getMassNumber().compareTo(b.getMassNumber());
+					}
+				}
+				);
+
+		// Loop on all atoms
+		for (IAtom a: molecule.atoms()) {
+			try {
+				IIsotope t = a.getMassNumber() == null ? Isotopes.getInstance().getMajorIsotope(a.getAtomicNumber()) : new Isotope(a.getSymbol(), a.getMassNumber());
+				if (count.containsKey(t))
+					count.put(t, new Integer(count.get(t) + 1));
+				else
+					count.put(t, new Integer(1));
+			} catch(java.io.IOException e) {
+				throw new CDKException("Unable to load isotopes data file.");
+			}
+		}
+
+		return count;
+	}
+
 	///////////////////////
 	// FIND SUBTRUCTURES //
 	///////////////////////
@@ -60,8 +97,44 @@ public final class CdkHelper {
 	 * @param err: Error between specified mass and exact mass of found substructure, in ppm.
 	 */
 	public void findSubstructures(IAtomContainer molecule, double mz, int charge, double err) throws CDKException {
+
+		// Add atom information into the molecule
 		this.setAtomTypes(molecule);
 		this.addExplicitHydrogens(molecule);
+
+		// A
+		// Find sets of atoms that are in mz.
+		java.util.Map<IIsotope, Integer> atom_types = this.countIsotopes(molecule);
+		java.util.Iterator i = atom_types.entrySet().iterator();
+		while (i.hasNext()) {
+			java.util.Map.Entry<IIsotope, Integer> mapEntry = (java.util.Map.Entry<IIsotope, Integer>)i.next();
+			System.out.println("Atom " + mapEntry.getKey().getSymbol() + mapEntry.getKey().getMassNumber() + " count is : " + mapEntry.getValue() + ".");
+		}
+//		java.util.List<String> atoms = AtomContainerManipulator.getAllIDs(molecule);
+//		for (String a: atoms)
+//			System.err.println("ATOM : " + a);
+		//MolecularFormulaRange
+		// For each set, generate all possible atom combinations in the molecule.
+		// For each atom combination, check the connectivity using org/openscience/cdk/graph/ConnectivityChecker.
+
+		// B
+		// Look for subgroups matching with mz and charge, starting from heavy atoms.
+/*		int[][] adjm = AdjacencyMatrix.getMatrix(molecule);
+		java.util.Stack<Integer> group = new java.util.Stack<Integer>();
+		java.util.Stack<Double> mass = new java.util.Stack<Double>(); // Use stack also for mass in order to avoid subtractions.
+		for (int i = 0 ; i < adjm.length ; ++i) {
+			group.push(i);
+			mass.push(molecule.getAtom(i).getExactMass());
+			cur_atom = i;
+			next_atom = 0;
+			while (true) {
+				if (adjm[cur_atom][next_atom] == 1) {
+				}
+			}
+		}
+		*/
+
+		// Return solutions
 	}
 
 	///////////////////////

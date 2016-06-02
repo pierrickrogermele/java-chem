@@ -5,6 +5,7 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.chem.CdkHelper;
 import org.openscience.chem.ChemObsConsole;
 import org.openscience.cdk.exception.CDKException;
+import org.openscience.cdk.templates.MoleculeFactory;
 
 public class TestCdkHelper {
 
@@ -113,5 +114,15 @@ public class TestCdkHelper {
 		IAtomContainer[] mols = hlp.loadSdf(file);
 		assertNotNull(mols);
 		assertTrue(mols.length > 0);
+	}
+
+	/////////////////////////////
+	// TEST FIND SUBSTRUCTURES //
+	/////////////////////////////
+
+	@Test
+	public void test_findSubstructures() throws CDKException {
+		IAtomContainer m = MoleculeFactory.makeBiphenyl();
+		new CdkHelper().findSubstructures(m, 24, +1, 5);
 	}
 }
