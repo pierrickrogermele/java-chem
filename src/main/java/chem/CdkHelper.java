@@ -39,6 +39,7 @@ import org.openscience.cdk.formula.MolecularFormulaRange;
 import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
 import org.openscience.cdk.formula.rules.IRule;
 import org.openscience.cdk.formula.rules.ToleranceRangeRule;
+import org.openscience.cdk.formula.rules.ElementRule;
 
 public final class CdkHelper {
 
@@ -70,7 +71,7 @@ public final class CdkHelper {
 				if (a.getMassNumber() == null)
 					a.setMassNumber(Isotopes.getInstance().getMajorIsotope(a.getAtomicNumber()).getMassNumber());
 		} catch (java.io.IOException e) {
-			throw new CDKException("Unable to load isotopes data file.");
+			throw new CDKException(e.getMessage());
 		}
 	}
 
@@ -104,7 +105,6 @@ public final class CdkHelper {
 		for (IIsotope i: mf.isotopes())
 			System.out.println("Atom " + i.getSymbol() + i.getMassNumber() + " count is : " + mf.getIsotopeCount(i) + ".");
 
-
 		// Find sets of atoms that are in mz.
 		MassToFormulaTool mtft = new MassToFormulaTool(DefaultChemObjectBuilder.getInstance());
 		{
@@ -118,6 +118,17 @@ public final class CdkHelper {
 				rules.add(tolerance_rule);
 
 				// Add set of isotopes
+				ElementRule element_rule = new ElementRule();
+				MolecularFormulaRange[] element_rule_param = new MolecularFormulaRange[1];
+				element_rule_param[0] = new MolecularFormulaRange();
+				try {
+					for (IIsotope i: mf.isotopes())
+						element_rule_param[0].addIsotope(Isotopes.getInstance().getIsotope(i.getSymbol(), i.getMassNumber()), 0, mf.getIsotopeCount(i));
+				} catch (java.io.IOException e) {
+					throw new CDKException(e.getMessage());
+				}
+				element_rule.setParameters(element_rule_param);
+				rules.add(element_rule);
 			}
 
 			mtft.setRestrictions(rules);
@@ -127,7 +138,6 @@ public final class CdkHelper {
 		for (IMolecularFormula imf: formula_set.molecularFormulas())
 			System.err.println(MolecularFormulaManipulator.getString(imf));
 
-		//MolecularFormulaRange
 		// For each set, generate all possible atom combinations in the molecule.
 		// For each atom combination, check the connectivity using org/openscience/cdk/graph/ConnectivityChecker.
 
