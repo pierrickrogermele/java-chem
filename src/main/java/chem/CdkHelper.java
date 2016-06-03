@@ -100,10 +100,12 @@ public final class CdkHelper {
 		// Add missing atom information into the molecule
 		this.updateAllInfo(molecule);
 
+		System.err.println("findSubstructures(): molecule =  " + this.toString(molecule) + ", mz = " + mz + ", charge = " + charge + ", err = " + err);
+
 		// List atoms present inside the molecule
 		IMolecularFormula mf = MolecularFormulaManipulator.getMolecularFormula(molecule);
 		for (IIsotope i: mf.isotopes())
-			System.out.println("Atom " + i.getSymbol() + i.getMassNumber() + " count is : " + mf.getIsotopeCount(i) + ".");
+			System.err.println("Atom " + i.getSymbol() + i.getMassNumber() + " count is : " + mf.getIsotopeCount(i) + ".");
 
 		// Find sets of atoms that are in mz.
 		MassToFormulaTool mtft = new MassToFormulaTool(DefaultChemObjectBuilder.getInstance());
