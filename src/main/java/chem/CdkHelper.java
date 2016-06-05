@@ -135,13 +135,44 @@ public final class CdkHelper {
 
 			mtft.setRestrictions(rules);
 		}
-
 		IMolecularFormulaSet formula_set = mtft.generate(mz);
+
+		// Display TODO --> toward observer ?
 		for (IMolecularFormula imf: formula_set.molecularFormulas())
 			System.err.println(MolecularFormulaManipulator.getString(imf));
 
 		// For each set, generate all possible atom combinations in the molecule.
+		java.util.List<java.util.List<IAtom>> combinations = new java.util.ArrayList<java.util.List<Integer>>();
+		for (IMolecularFormula imf: formula_set.molecularFormulas()) {
+			java.util.Map<IIsotope, java.util.List<IAtom>> isotope_to_atoms;
+			for (IIsotope i: imf.isotopes()) {
+
+				// Isotope count
+				int ic = imf.getIsotopeCount(i);
+
+				// Get all atoms equivalent to this isotope inside the molecule
+				java.util.List<IAtom> atoms = this.find_atoms(molecule, IIsotope);
+				isotope_to_atoms.add(ic, atoms);
+
+			}
+			// Get all possible combinations inside the molecule
+		}
+
 		// For each atom combination, check the connectivity using org/openscience/cdk/graph/ConnectivityChecker.
+
+		// C
+		/* 
+		   Create a Stack<IAtom> atom_stack
+		   atom_stack.push(heavy atoms of molecule)
+		   Stack<IAtom> substructure;
+		   while (atom_stack NOT EMPTY)
+		   	   cur_atom = atom_stack.pop()
+		   	   if (cur_atom NOT IN substructure) then
+		  	    	substructure.push(cur_atom)
+			    	atom_stack.push(NEW_ATOM)
+		   	        atom_stack.push(cur_atom.getConnectedAtomsList())
+		        
+		*/
 
 		// B
 		// Look for subgroups matching with mz and charge, starting from heavy atoms.
