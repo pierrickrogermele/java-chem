@@ -40,8 +40,26 @@ import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
 import org.openscience.cdk.formula.rules.IRule;
 import org.openscience.cdk.formula.rules.ToleranceRangeRule;
 import org.openscience.cdk.formula.rules.ElementRule;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Comparator;
 
 public final class CdkHelper {
+
+	/////////////////////////
+	// IISOTOPE COMPARATOR //
+	/////////////////////////
+
+	public static class IIsotopeComparator implements Comparator<IIsotope> {
+		@Override
+		public int compare(IIsotope x, IIsotope y) {
+			if (x.getAtomicNumber() != y.getAtomicNumber())
+				return Integer.compare(x.getAtomicNumber(), y.getAtomicNumber());
+			return Integer.compare(x.getMassNumber(), y.getMassNumber());
+		}
+	}
 
 	//////////////////
 	// CONSTRUCTORS //
@@ -85,6 +103,22 @@ public final class CdkHelper {
 		this.updateMassNumbers(c);
 	}
 
+	////////////////
+	// FIND ATOMS //
+	////////////////
+
+	public List<IAtom> findAtoms(IAtomContainer ac, IIsotope isotope) {
+
+		List<IAtom> atoms = new ArrayList<IAtom>();
+		IIsotopeComparator iso_comp = new IIsotopeComparator();
+
+		for (IAtom a: ac.atoms())
+			if (iso_comp.compare(a, isotope) == 0)
+				atoms.add(a);
+
+		return atoms;
+	}
+
 	///////////////////////
 	// FIND SUBTRUCTURES //
 	///////////////////////
@@ -111,7 +145,7 @@ public final class CdkHelper {
 		MassToFormulaTool mtft = new MassToFormulaTool(DefaultChemObjectBuilder.getInstance());
 		{
 			// Add rules
-			java.util.List<IRule> rules = new java.util.ArrayList<IRule>();
+			List<IRule> rules = new ArrayList<IRule>();
 			{
 				// Add mass tolerance rule
 				ToleranceRangeRule tolerance_rule = new ToleranceRangeRule();
@@ -142,23 +176,24 @@ public final class CdkHelper {
 			System.err.println(MolecularFormulaManipulator.getString(imf));
 
 		// For each set, generate all possible atom combinations in the molecule.
-		java.util.List<java.util.List<IAtom>> combinations = new java.util.ArrayList<java.util.List<Integer>>();
+		List<java.util.List<IAtom>> combinations = new ArrayList<List<IAtom>>();
 		for (IMolecularFormula imf: formula_set.molecularFormulas()) {
-			java.util.Map<IIsotope, java.util.List<IAtom>> isotope_to_atoms;
+			Map<IIsotope, List<IAtom>> isotope_to_atoms = new TreeMap<IIsotope, List<IAtom>>(new IIsotopeComparator());
 			for (IIsotope i: imf.isotopes()) {
 
 				// Isotope count
-				int ic = imf.getIsotopeCount(i);
+//				int ic = imf.getIsotopeCount(i);
 
 				// Get all atoms equivalent to this isotope inside the molecule
-				java.util.List<IAtom> atoms = this.find_atoms(molecule, IIsotope);
-				isotope_to_atoms.add(ic, atoms);
+				List<IAtom> atoms = this.findAtoms(molecule, i);
+				isotope_to_atoms.put(i, atoms);
 
 			}
-			// Get all possible combinations inside the molecule
-		}
 
-		// For each atom combination, check the connectivity using org/openscience/cdk/graph/ConnectivityChecker.
+			// Get all possible combinations inside the molecule
+
+			// For each atom combination, check the connectivity using org/openscience/cdk/graph/ConnectivityChecker.
+		}
 
 		// C
 		/* 
